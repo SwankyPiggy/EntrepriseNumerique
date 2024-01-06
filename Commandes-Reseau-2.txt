@@ -1,0 +1,311 @@
+Configuration du réseau sous Windows 
+
+ 
+
+Commande : ncpa.cpl 
+
+ 
+
+“Client pour les réseaux microsoft” 
+
+Protocole Internet Version 4 (TCP/IPv4) 
+
+=> Obtenir une adresse IP automatiquement 
+
+commande : ipconfig 
+
+Configuration de firewall personnel Windows 
+
+ 
+
+Commande : firewall.cpl 
+
+Activer/désactiver la règle ICMP : 
+
+netsh advfirewall firewall set rule name="File and Printer Sharing (Echo Request - ICMPv4-In)" new enable=yes 
+
+Test : ping ... 
+
+ 
+
+ 
+
+    Ouverture du Panneau de configuration : 
+
+    Appuyez sur la touche Win + R pour ouvrir la boîte de dialogue Exécuter. 
+
+    Tapez control et appuyez sur Entrée pour ouvrir le Panneau de configuration. 
+
+    Accéder aux paramètres de pare-feu Windows : 
+
+    Sélectionnez "Système et sécurité" dans le Panneau de configuration. 
+
+    Cliquez sur "Firewall Windows". 
+
+    Accéder aux règles de trafic entrant : 
+
+    Dans la fenêtre du pare-feu Windows, à gauche, cliquez sur "Paramètres avancés". 
+
+    Trouver la règle ICMP : 
+
+    Dans la fenêtre des règles du pare-feu, à gauche, sélectionnez "Règles de trafic entrant". 
+
+    Recherchez la règle liée à ICMP. Dans la plupart des cas, elle sera nommée "File and Printer Sharing (Echo Request - ICMPv4-In)". 
+
+    Activer/désactiver la règle ICMP : 
+
+    Cliquez avec le bouton droit sur la règle ICMP et sélectionnez "Activer" ou "Désactiver" selon vos besoins. 
+
+ 
+
+Configuration du réseau sous Linux via à l’interface graphique 
+
+ 
+
+“Network” 
+
+Ipv4 
+
+Configuration des paramètres réseaux en ligne de commande sous Windows 
+
+ 
+
+C:\>ipconfig : résumé 
+
+C:\>ipconfig /all : détaillé 
+
+C:\>ipconfig /? : donne toutes les commandes possibles 
+
+C:\>route print : afficher la table de routage IP actuelle sur l'ordinateur. 
+
+ 
+
+C:\>netsh interface show interface : nom et le statut des interfaces 
+
+Configurer une adresse statique sur une interface 
+
+ 
+
+C:\>netsh interface ip set address "Ethernet" static <IPV4_address> <netmask> [<Default_Gateway>] 
+
+C:\>netsh interface ip set address "Ethernet" static 192.168.1.99 255.255.255.0 
+
+C:\>netsh interface ip set address "Ethernet" static 192.168.1.99 255.255.255.0 192.168.1.1 
+
+C:\>netsh interface ipv6 set address "Ethernet" 2a02:a03f:4299:e700:988f:c0df:a00f:856c/64 
+
+Ajouter des adresses supplémentaires 
+
+C:\>netsh interface ip add address "Ethernet" 192.168.1.99 255.255.255.0 
+
+C:\>netsh interface ipv6 add address "Ethernet" 2a02:a03f:4299:e700:988f:c0df:a00f:856c/64 
+
+Supprimer des adresses  
+
+C:\>netsh interface ip delete address "Ethernet" 192.168.1.99 
+
+C:\>netsh interface ipv6 delete address "Ethernet" 2a02:a03f:4299:e700:988f:c0df:a00f:856c 
+
+Configuration dynamique : 
+
+C:\>netsh interface ip set address "Ethernet" dhcp 
+
+C:\>ipconfig /release 
+
+C:\>ipconfig /renew 
+
+Serveur DNS : associe un nom de domaine à une IP 
+
+C:\>netsh interface ip set dns "Ethernet" static 192.168.1.1 
+
+C:\>netsh interface ip add dns "Ethernet" 8.8.8.8 
+
+C:\>netsh interface ip set dns Ethernet dhcp 
+
+Activer / désactiver une carte réseau : 
+
+C:\>netsh interface set interface "Ethernet" enable 
+
+C:\>netsh interface set interface "Ethernet" disable 
+
+Vérifier/supprimer/configurer le default gateway en IPv4: 
+
+C:\>route print 
+
+C:\>route add [-p] 0.0.0.0 mask 0.0.0.0 192.168.1.1 
+
+C:\>route delete 0.0.0.0 
+
+ 
+
+    Configurez la 1° carte réseau de votre machine virtuelle de sorte qu’elle soit vue sur le 
+
+réseau du laboratoire comme une machine physique et reçoive donc une configuration 
+
+du serveur DHCP de l’école (Cf paramétrage réseau VirtualBox vu en séance 1) 
+
+ 
+
+    Ajoutez une 2° carte réseau dans votre configuration. Configurez cette 2° carte en 
+
+réseau interne car nous ne l’utiliserons pas. 
+
+ 
+
+    Prenez note de la MAC address de votre 2° carte afin de pouvoir la retrouver du côté 
+
+de l’OS de votre VM 
+
+ 
+
+Configuration des paramètres réseau en ligne de commande sous Linux 
+
+ 
+
+Vérifier la configuration réseau 
+
+ 
+
+ip addr show (ip -6 addr show pour l’IPv6) 
+
+ip link show vous montrera les informations niveau 2 
+
+La commande ip route show 
+
+La commande cat /etc/resolv.conf ==> quel serveur dns et search domain 
+
+Configuration des paramètres réseaux via les fichiers de configuration 
+
+ 
+
+Faire une save avec la commande cp 
+
+ 
+
+Pour que les modifications soient permanantes ==> /etc/network/interfaces 
+
+Cat et nano pour afficher et modifier le contenu 
+
+Utiliser “auto” (enp0s3) ou (eth0) 
+
+ 
+
+auto enp0s3 
+
+iface eth0 inet static 
+
+    address 172.16.20.10 
+
+    netmask 255.255.255.0 
+
+Root@debian: ~# ifquery enp0s3 
+
+address 172.16.20.10 
+
+netmask 255.255.255.0 
+
+Broadcast 172.16.20.255 
+
+_____________________ 
+
+Ctrl o ctrl x 
+
+systemctl restart networking 
+
+journalctl –xe => erreurs 
+
+ifdown enp0s3 => Déconfigure 
+
+ifup enp0s3 => Configure 
+
+ifquerry enp0s3 => Montre 
+
+Configuration des paramètres réseaux en ligne de commande 
+
+ 
+
+Ip addr flush dev enp0s3 
+
+ip  addr add 192.168.30.20/24 dev enp0s3 
+
+ip  addr del 192.168.30.20/24 dev enp0s3 
+
+Dhclient –v enp0s3 
+
+ps aux | grep dhclient 
+
+pkill dhclient 
+
+Hostname 
+
+Default gateway : 
+
+Ip route del default 
+
+Ip route add default via 172.16.10.1 
+
+Route statique : 
+
+Ip route add 192.168.1.0/24 via 172.16.10.40  
+
+Ip route add 192.168.2.0/24 via 172.16.10.40 dev enp0s3 
+
+Ip route del 192.168.1.0/24 
+
+Up Down : 
+
+Ip link set enp0s3 down 
+
+Changer mac address : 
+
+Ip link set dev enp0s3 address aa:bb:cc:aa:bb:cc 
+
+DNS : 
+
+apt-get install dnsutils 
+
+ 
+
+Windows Server 
+
+ 
+
+Configurez le réseau de votre Windows Server 
+
+ 
+
+Serveur local => IPv4 
+
+Supp IPv6 
+
+C:\inetpub\wwwroot\site1 
+
+ 
+
+ 
+
+Kali 
+
+ 
+
+sudo nano /etc/network/interfaces 
+
+# The loopback network interface 
+
+auto lo 
+
+iface lo inet loopback 
+
+  
+
+# The primary network interface 
+
+auto eth0 
+
+iface eth0 inet dhcp 
+
+ 
+
+sudo service networking restart 
+
+sudo reboot

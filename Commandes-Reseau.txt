@@ -1,0 +1,8 @@
+Voir la configurations réseaux :
+- ipconfig
+- ipconfig /all
+- ipconfig /?
+- route print
+- ipconfig /release = libère l’adresse ip actuelle.
+- ipconfig /renew = demande une nouvelle adresse IP au serveur DHCP.
+
